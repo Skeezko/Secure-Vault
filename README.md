@@ -93,6 +93,7 @@ cargo run --release
 │   └── models.rs        # Data structures
 ├── Cargo.toml           # Dependencies and project configuration
 └── README.md
+└── LICENSE
 ```
 
 ## 🔧 Technical Details
