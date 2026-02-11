@@ -92,7 +92,7 @@ cargo run --release
 │   ├── storage.rs       # File persistence layer
 │   └── models.rs        # Data structures
 ├── Cargo.toml           # Dependencies and project configuration
-└── README.md
+├── README.md
 └── LICENSE
 ```
 
