@@ -11,7 +11,7 @@
       <img src="https://img.shields.io/badge/Made_with-Rust-orange?logo=rust" alt="Rust">
     </a>
     <a href="https://github.com/iced-rs/iced">
-      <img src="https://img.shields.io/badge/GUI-Iced_0.12-blue?logo=icloud" alt="Iced">
+      <img src="https://img.shields.io/badge/GUI-Iced_0.14-blue?logo=icloud" alt="Iced">
     </a>
     <a href="#">
       <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
