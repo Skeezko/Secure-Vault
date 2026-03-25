@@ -1,141 +1,147 @@
-<div align="center">
+```
+███████╗███████╗ ██████╗██╗   ██╗██████╗ ███████╗
+██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗██╔════╝
+███████╗█████╗  ██║     ██║   ██║██████╔╝█████╗  
+╚════██║██╔══╝  ██║     ██║   ██║██╔══██╗██╔══╝  
+███████║███████╗╚██████╗╚██████╔╝██║  ██║███████╗
+╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
 
-  <h1>🔐 Secure Vault - Password Manager</h1>
-  
-  <p>
-    <strong>A modern, secure password manager built with Rust and Iced GUI framework. Store and manage your credentials with military-grade encryption.</strong>
-  </p>
+██╗   ██╗ █████╗ ██╗   ██╗██╗  ████████╗
+██║   ██║██╔══██╗██║   ██║██║  ╚══██╔══╝
+██║   ██║███████║██║   ██║██║     ██║   
+╚██╗ ██╔╝██╔══██║██║   ██║██║     ██║   
+ ╚████╔╝ ██║  ██║╚██████╔╝███████╗██║   
+  ╚═══╝  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝   
+```
 
-  <p>
-    <a href="https://www.rust-lang.org/">
-      <img src="https://img.shields.io/badge/Made_with-Rust-orange?logo=rust" alt="Rust">
-    </a>
-    <a href="https://github.com/iced-rs/iced">
-      <img src="https://img.shields.io/badge/GUI-Iced_0.14-blue?logo=icloud" alt="Iced">
-    </a>
-    <a href="#">
-      <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
-    </a>
-  </p>
-  
-  <br />
-</div>
+> **A local-first password manager built with Rust and Iced. AES-256-GCM encryption, Argon2 key derivation, zero-knowledge architecture.**
 
-## ✨ Features
+Your master password never touches disk. Credentials are encrypted locally, decrypted in memory, and never leave your machine. No cloud, no sync, no third-party — just cryptography.
 
-- **🔒 Military-Grade Encryption**: AES-256-GCM encryption with Argon2 key derivation
-- **🎨 Modern UI**: Clean, intuitive interface built with Iced framework
-- **🔍 Quick Search**: Instantly find your credentials with real-time search
-- **🎲 Password Generator**: Create strong, random passwords with customizable length (8-64 characters)
-- **👁️ Password Visibility Toggle**: Show/hide passwords as needed
-- **📋 One-Click Copy**: Copy passwords to clipboard instantly
-- **🎭 Theme Support**: Multiple built-in themes to customize your experience
-- **💾 Persistent Storage**: Encrypted local storage of all credentials
-- **🚀 Fast & Lightweight**: Native performance with minimal resource usage
+---
 
-## 🔐 Security
+## Context
 
-This password manager implements industry-standard security practices:
+Most password managers either live in the cloud (trust someone else's infra) or ship as bloated Electron apps burning 300MB of RAM to store 20 passwords. **Secure Vault** is a native Rust binary with a clean GUI — AES-256-GCM for data encryption, Argon2 for key derivation, and the Iced framework for rendering. Everything runs locally, everything is encrypted at rest.
 
-- **AES-256-GCM** encryption for all stored data
-- **Argon2** password hashing for master password derivation
-- **Cryptographically secure** random number generation for salts and passwords
-- **Zero-knowledge architecture**: Your master password is never stored
-- **Local storage only**: Your data never leaves your device
+---
 
-## 📋 Prerequisites
+## Security Architecture
 
-- Rust 1.70 or higher
-- Cargo (comes with Rust)
+```
+Master Password + Random Salt ──► [ ARGON2 ] ──► 256-bit Encryption Key
+                                                          │
+                  Credentials (JSON) ──► [ AES-256-GCM ] ◄╯
+                                                │
+                              credentials.encrypted ◄──── Salt (16 bytes) + Ciphertext
+```
 
-## 🚀 Installation
+- **AES-256-GCM** — authenticated encryption for all stored data. Tampering is detected.
+- **Argon2** — memory-hard password hashing. Resistant to GPU/ASIC brute-force.
+- **CSPRNG** — cryptographically secure random generation for salts and password generation.
+- **Zero-knowledge** — the master password is never stored, only used to derive the encryption key at runtime.
 
-1. Clone the repository:
+### Storage Format
+
+The `credentials.encrypted` file is a raw binary blob: the first 16 bytes are the random salt used for Argon2 key derivation, and the remaining bytes are the AES-256-GCM ciphertext containing serialized JSON credential data.
+
+---
+
+## Features
+
+- **Real-time search** across all stored services
+- **Password generator** with configurable length (8–64 characters)
+- **Visibility toggle** — show/hide passwords inline
+- **One-click copy** to clipboard
+- **Multiple built-in themes** for UI customization
+- **Native performance** — no Electron, no WebView, minimal resource footprint
+
+---
+
+## Build & Run
+
 ```bash
+# Clone
 git clone https://github.com/Skeezko/Secure-Vault.git
 cd Secure-Vault
-```
 
-2. Build the project:
-```bash
+# Build
 cargo build --release
-```
 
-3. Run the application:
-```bash
+# Run
 cargo run --release
 ```
 
-## 💻 Usage
+**Requirements**: Rust 1.70+, Cargo.
 
-### First Time Setup
+---
 
-1. Launch the application
-2. Enter a strong master password (this encrypts all your data)
-3. Click "UNLOCK SYSTEM" to create your vault
+## Usage
 
-### Managing Passwords
+### First Launch
 
-- **Add New Entry**: Fill in the form at the bottom (Service, Username, Password)
-- **Generate Password**: Use the slider to set length, then click "Gen"
-- **Edit Entry**: Click on a service in the sidebar, modify fields, and click "Update"
-- **Delete Entry**: Select a service and click "Delete Service"
-- **Search**: Use the search bar to quickly filter services
-- **Copy Password**: Click the "Copy" button next to any password
+Launch the binary, set a strong master password (12+ characters, mixed case, numbers, symbols), and click "UNLOCK SYSTEM". This creates your encrypted vault.
 
-## 🏗️ Project Structure
+### Managing Credentials
+
+- **Add**: fill in Service / Username / Password at the bottom of the UI, submit.
+- **Generate**: use the slider to set length, click "Gen" for a cryptographically random password.
+- **Edit**: select a service in the sidebar, modify fields, click "Update".
+- **Delete**: select a service, click "Delete Service".
+- **Search**: real-time filtering via the search bar.
+- **Copy**: click "Copy" next to any password field.
+
+---
+
+## Project Structure
 
 ```
+.
 ├── src/
-│   ├── main.rs          # Application entry point and UI logic
-│   ├── crypto.rs        # Encryption/decryption manager
-│   ├── storage.rs       # File persistence layer
-│   └── models.rs        # Data structures
-├── Cargo.toml           # Dependencies and project configuration
-├── README.md
-└── LICENSE
+│   ├── main.rs        # Application entry point + UI logic (Iced)
+│   ├── crypto.rs      # AES-256-GCM encryption / Argon2 key derivation
+│   ├── storage.rs     # File persistence layer
+│   └── models.rs      # Data structures
+├── Cargo.toml         # Dependencies and project configuration
+├── LICENSE
+└── README.md
 ```
 
-## 🔧 Technical Details
+---
 
-### Dependencies
+## Dependencies
 
-- **iced**: Modern GUI framework for Rust
-- **aes-gcm**: AES-256-GCM encryption implementation
-- **argon2**: Password hashing and key derivation
-- **serde/serde_json**: Serialization for data persistence
-- **rand**: Cryptographically secure random number generation
+| Crate | Role |
+|-------|------|
+| `iced` | Cross-platform native GUI framework |
+| `aes-gcm` | AES-256-GCM authenticated encryption |
+| `argon2` | Memory-hard password hashing / key derivation |
+| `serde` / `serde_json` | Credential serialization |
+| `rand` | Cryptographically secure RNG |
 
-### Data Storage
+---
 
-Credentials are stored in an encrypted file (`credentials.encrypted`) with the following structure:
-- First 16 bytes: Random salt for key derivation
-- Remaining bytes: AES-256-GCM encrypted JSON data
+## Security Best Practices
 
-### Encryption Flow
+- Use a master password of **12+ characters** with mixed case, digits, and symbols.
+- Never share or reuse your master password.
+- Keep encrypted backups of `credentials.encrypted`.
+- This application is only as secure as the device it runs on — lock your OS.
 
-1. Master password + salt → Argon2 → 256-bit encryption key
-2. Credentials → JSON serialization → AES-256-GCM encryption
-3. Salt + encrypted data → saved to disk
+---
 
-## 🛡️ Security Best Practices
+## License
 
-- **Choose a strong master password**: Use at least 12 characters with mixed case, numbers, and symbols
-- **Never share your master password**: This is the only key to decrypt your vault
-- **Regular backups**: Keep encrypted backups of your `credentials.encrypted` file
-- **Secure your device**: This application is only as secure as the device it runs on
+MIT — see `LICENSE`.
 
+---
 
-## 📝 License
+## Disclaimer
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Provided "as is" without warranty. While security best practices are followed, use at your own risk. Maintain backups of your encrypted data.
 
-## ⚠️ Disclaimer
+---
 
-This software is provided "as is" without warranty of any kind. While every effort has been made to ensure security, use at your own risk. Always maintain backups of your encrypted data.
+## Acknowledgments
 
-## 🙏 Acknowledgments
-
-- Built with [Iced](https://github.com/iced-rs/iced) - A cross-platform GUI library for Rust
-- Encryption powered by [RustCrypto](https://github.com/RustCrypto)
-- Password hashing by [Argon2](https://github.com/RustCrypto/password-hashes)
+Built with [Iced](https://github.com/iced-rs/iced), encryption by [RustCrypto](https://github.com/RustCrypto), password hashing by [Argon2](https://github.com/RustCrypto/password-hashes).
