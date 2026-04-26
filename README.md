@@ -33,7 +33,7 @@ Master Password + Random Salt ──► [ ARGON2 ] ──► 256-bit Encryption 
                                                           │
                   Credentials (JSON) ──► [ AES-256-GCM ] ◄╯
                                                 │
-                              credentials.encrypted ◄──── Salt (16 bytes) + Ciphertext
+                                          secure.vault ◄──── Salt (16 bytes) + Ciphertext
 ```
 
 - **AES-256-GCM** — authenticated encryption for all stored data. Tampering is detected.
@@ -43,7 +43,7 @@ Master Password + Random Salt ──► [ ARGON2 ] ──► 256-bit Encryption 
 
 ### Storage Format
 
-The `credentials.encrypted` file is a raw binary blob: the first 16 bytes are the random salt used for Argon2 key derivation, and the remaining bytes are the AES-256-GCM ciphertext containing serialized JSON credential data.
+The `secure.vault` file is a raw binary blob: the first 16 bytes are the random salt used for Argon2 key derivation, and the remaining bytes are the AES-256-GCM ciphertext containing serialized JSON credential data.
 
 ---
 
@@ -125,7 +125,7 @@ Launch the binary, set a strong master password (12+ characters, mixed case, num
 
 - Use a master password of **12+ characters** with mixed case, digits, and symbols.
 - Never share or reuse your master password.
-- Keep encrypted backups of `credentials.encrypted`.
+- Keep encrypted backups of `secure.vault`.
 - This application is only as secure as the device it runs on — lock your OS.
 
 ---
