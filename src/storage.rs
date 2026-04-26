@@ -9,7 +9,7 @@ pub struct Storage {
     pub salt: [u8; 16],
 }
 
-const STORAGE_FILE_NAME: &str = "credentials.encrypted";
+const STORAGE_FILE_NAME: &str = "secure.vault";
 
 impl Storage {
     pub fn load(password: &str) -> Result<(Self, PasswordStore), String> {
